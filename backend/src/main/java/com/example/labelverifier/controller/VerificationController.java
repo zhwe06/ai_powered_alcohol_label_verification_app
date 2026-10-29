@@ -6,8 +6,9 @@ import com.example.labelverifier.dto.OcrResult;
 import com.example.labelverifier.dto.ValidationResult;
 import com.example.labelverifier.service.GovernmentWarningValidator;
 import com.example.labelverifier.dto.FieldCheck;
-import com.example.labelverifier.service.GovernmentWarningValidator;
+import com.example.labelverifier.service.NetContentsValidator;
 import com.example.labelverifier.service.LabelFieldExtractor;
+import com.example.labelverifier.service.NetContentsValidator;
 import com.example.labelverifier.service.ValidationService;
 import com.example.labelverifier.service.OcrService;
 import tools.jackson.databind.JsonNode;
@@ -33,18 +34,21 @@ public class VerificationController {
     private final OcrService ocrService;
     private final LabelFieldExtractor labelFieldExtractor;
     private final GovernmentWarningValidator governmentWarningValidator;
+    private final NetContentsValidator netContentsValidator;
 
     public VerificationController(
             ValidationService validationService,
             JsonMapper objectMapper,
             OcrService ocrService,
             LabelFieldExtractor labelFieldExtractor,
-            GovernmentWarningValidator governmentWarningValidator) {
+            GovernmentWarningValidator governmentWarningValidator,
+            NetContentsValidator netContentsValidator) {
         this.validationService = validationService;
         this.objectMapper = objectMapper;
         this.ocrService = ocrService;
         this.labelFieldExtractor = labelFieldExtractor;
         this.governmentWarningValidator = governmentWarningValidator;
+        this.netContentsValidator = netContentsValidator;
     }
 
     @PostMapping(value = "/ocr", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -117,6 +121,10 @@ public class VerificationController {
         List<FieldCheck> checks = new ArrayList<>(basicResult.checks());
 
         checks.addAll( governmentWarningValidator.validate( fields.governmentWarning()));
+
+        String expectedNetContents = data.path("netContents").asText("");
+
+        checks.add(netContentsValidator.validate(expectedNetContents, fields.netContents()));
 
         String overallStatus;
 

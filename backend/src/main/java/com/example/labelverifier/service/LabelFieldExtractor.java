@@ -16,6 +16,7 @@ public class LabelFieldExtractor {
                 "(?:ABV|ALC\\.?\\s*/?\\s*VOL\\.?)",
                 Pattern.CASE_INSENSITIVE
             );
+
     private static final Pattern ABV_PREFIX_PATTERN =
         Pattern.compile(
             "(?:ALCOHOL\\s+BY\\s+VOLUME|" +
@@ -39,6 +40,13 @@ public class LabelFieldExtractor {
                 Pattern.CASE_INSENSITIVE
             );
 
+    private static final Pattern NET_CONTENTS_PATTERN =
+        Pattern.compile(
+             "\\bNET\\s+CONTENTS?\\s*[:\\-]?\\s*" +
+            "(\\d+(?:\\.\\d+)?\\s*(?:mL|L))\\b",
+            Pattern.CASE_INSENSITIVE
+        );
+
     public DetectedLabelFields extract(
             String fullText,
             String expectedBrand) {
@@ -55,9 +63,7 @@ public class LabelFieldExtractor {
 
         String abv = extractAbv(fullText);
 
-        String volume = findFirst(
-            VOLUME_PATTERN, fullText
-        );
+        String volume = extractNetContents(fullText);
 
         String warning = extractWarning(fullText);
 
@@ -107,24 +113,9 @@ public class LabelFieldExtractor {
         return null;
     }
 
-    private String findFirst(
-            Pattern pattern,
-            String text) {
-
-        Matcher matcher = pattern.matcher(text);
-
-        if (matcher.find()) {
-            return matcher.group().trim();
-        }
-
-        return null;
-    }
-
     private String extractWarning(String text) {
 
-        Matcher matcher =
-                WARNING_PATTERN.matcher(text);
-
+        Matcher matcher =WARNING_PATTERN.matcher(text);
         if (!matcher.find()) {
             return null;
         }
@@ -136,6 +127,17 @@ public class LabelFieldExtractor {
         );
 
         return text.substring(start, end).trim();
+    }
+
+    private String extractNetContents(String text) {
+
+        Matcher matcher = NET_CONTENTS_PATTERN.matcher(text);
+
+        if (matcher.find()) {
+            return matcher.group(1).trim();
+        }
+
+        return null;
     }
 
     private String normalize(String text) {
