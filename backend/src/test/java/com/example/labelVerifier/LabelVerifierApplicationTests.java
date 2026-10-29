@@ -1,4 +1,4 @@
-package com.example.labelVerifier;
+package com.example.labelverifier;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
