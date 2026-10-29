@@ -4,6 +4,9 @@ package com.example.labelverifier.controller;
 import com.example.labelverifier.dto.DetectedLabelFields;
 import com.example.labelverifier.dto.OcrResult;
 import com.example.labelverifier.dto.ValidationResult;
+import com.example.labelverifier.service.GovernmentWarningValidator;
+import com.example.labelverifier.dto.FieldCheck;
+import com.example.labelverifier.service.GovernmentWarningValidator;
 import com.example.labelverifier.service.LabelFieldExtractor;
 import com.example.labelverifier.service.ValidationService;
 import com.example.labelverifier.service.OcrService;
@@ -16,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 import java.io.IOException;
 
@@ -27,16 +32,19 @@ public class VerificationController {
     private final JsonMapper objectMapper;
     private final OcrService ocrService;
     private final LabelFieldExtractor labelFieldExtractor;
+    private final GovernmentWarningValidator governmentWarningValidator;
 
     public VerificationController(
             ValidationService validationService,
             JsonMapper objectMapper,
             OcrService ocrService,
-            LabelFieldExtractor labelFieldExtractor) {
+            LabelFieldExtractor labelFieldExtractor,
+            GovernmentWarningValidator governmentWarningValidator) {
         this.validationService = validationService;
         this.objectMapper = objectMapper;
         this.ocrService = ocrService;
         this.labelFieldExtractor = labelFieldExtractor;
+        this.governmentWarningValidator = governmentWarningValidator;
     }
 
     @PostMapping(value = "/ocr", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -98,14 +106,32 @@ public class VerificationController {
                     expectedBrand
             );
 
-        ValidationResult result =
+        ValidationResult basicResult =
             validationService.validate(
-                    expectedBrand,
-                    fields.brandName(),
-                    expectedAbv,
-                    fields.alcoholContent()
+                expectedBrand,
+                fields.brandName(),
+                expectedAbv,
+                fields.alcoholContent()
             );
 
-        return ResponseEntity.ok(result);
+        List<FieldCheck> checks = new ArrayList<>(basicResult.checks());
+
+        checks.addAll( governmentWarningValidator.validate( fields.governmentWarning()));
+
+        String overallStatus;
+
+        if (checks.stream().anyMatch( c -> "FAIL".equals(c.status()))) {
+            overallStatus = "FAIL";
+
+        } else if (checks.stream().anyMatch( c -> "NEEDS_REVIEW".equals(c.status()))) {
+            overallStatus = "NEEDS_REVIEW";
+        } else {
+            overallStatus = "PASS";
+        }
+
+        ValidationResult finalResult =
+            new ValidationResult(overallStatus, checks);
+
+        return ResponseEntity.ok(finalResult);
     }
 }
