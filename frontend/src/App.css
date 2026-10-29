@@ -1,0 +1,279 @@
+:root {
+  font-family: Inter, system-ui, Arial, sans-serif;
+  color: #1b2939;
+  background: #f5f7fa;
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+button, input {
+  font: inherit;
+}
+
+.app-shell {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 48px 24px 24px;
+}
+
+.page-header {
+  margin-bottom: 32px;
+}
+
+.eyebrow {
+  color: #496b92;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+h1 {
+  font-size: clamp(28px, 4vw, 40px);
+  margin: 10px 0;
+}
+
+h2 {
+  font-size: 20px;
+  margin: 0 0 8px;
+}
+
+h3 {
+  font-size: 15px;
+  margin: 0;
+}
+
+.page-header p,
+.section-description,
+.results-header p {
+  color: #667587;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.panel {
+  background: #fff;
+  border: 1px solid #e2e7ef;
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.025);
+}
+
+.panel label:not(.upload-zone) {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 20px 0 8px;
+}
+
+.panel input:not(.file-input) {
+  display: block;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+}
+
+.panel input:focus {
+  outline: 2px solid #6f9bc9;
+  outline-offset: 1px;
+}
+
+.upload-zone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 265px;
+  margin-top: 20px;
+  border: 2px dashed #bdcbdc;
+  border-radius: 10px;
+  cursor: pointer;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+.upload-zone:hover {
+  border-color: #2563a6;
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: #64748b;
+}
+
+.upload-placeholder strong {
+  color: #253b55;
+}
+
+.upload-icon {
+  font-size: 36px;
+}
+
+.image-preview {
+  max-width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+}
+
+.file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.filename {
+  font-size: 13px;
+  color: #667587;
+  overflow-wrap: anywhere;
+}
+
+.form-actions {
+  grid-column: 1 / -1;
+}
+
+.verify-button {
+  background: #17477d;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 28px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.verify-button:hover:not(:disabled) {
+  background: #10335c;
+}
+
+.verify-button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.results-section {
+  margin-top: 36px;
+}
+
+.results-header,
+.check-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.results-list {
+  display: grid;
+  gap: 12px;
+}
+
+.check-card {
+  padding: 20px;
+  border: 1px solid #e2e7ef;
+  background: white;
+  border-radius: 10px;
+}
+
+.check-values {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.value-label {
+  color: #687789;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.check-values p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.check-reason {
+  color: #53667a;
+  font-size: 13px;
+  margin-bottom: 0;
+}
+
+.status {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.status-pass {
+  color: #166534;
+  background: #dcfce7;
+}
+
+.status-fail {
+  color: #991b1b;
+  background: #fee2e2;
+}
+
+.status-needs_review {
+  color: #92400e;
+  background: #fef3c7;
+}
+
+.notice {
+  margin: 16px 0;
+  padding: 14px;
+  border: 1px solid #cbd5e1;
+  background: #eef3f8;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.error-message {
+  margin-top: 20px;
+  padding: 14px;
+  border-radius: 8px;
+  color: #991b1b;
+  background: #fee2e2;
+}
+
+footer {
+  margin-top: 50px;
+  padding: 24px 0;
+  border-top: 1px solid #e2e7ef;
+  font-size: 12px;
+  color: #79889a;
+}
+
+@media (max-width: 720px) {
+  .form-grid,
+  .check-values {
+    grid-template-columns: 1fr;
+  }
+
+  .app-shell {
+    padding: 24px 16px;
+  }
+
+  .panel {
+    padding: 20px;
+  }
+}
