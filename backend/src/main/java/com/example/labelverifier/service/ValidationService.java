@@ -21,16 +21,28 @@ public class ValidationService {
 
         List<FieldCheck> checks = new ArrayList<>();
 
-        boolean brandMatch = normalize(expectedBrand)
-                .equals(normalize(detectedBrand));
+        String brandStatus;
+
+        if (expectedBrand == null || expectedBrand.isBlank()
+            || detectedBrand == null || detectedBrand.isBlank()) {
+            brandStatus = "NEEDS_REVIEW";
+        } else if (normalize(expectedBrand)
+            .equals(normalize(detectedBrand))) {
+            brandStatus = "PASS";
+        } else {
+            brandStatus = "FAIL";
+        }
 
         checks.add(new FieldCheck(
-                "brandName",
-                expectedBrand,
-                detectedBrand,
-                brandMatch ? "PASS" : "FAIL",
-                brandMatch ? "Brand names match"
-                           : "Brand names do not match"
+            "brandName",
+            expectedBrand,
+            detectedBrand,
+            brandStatus,
+            switch (brandStatus) {
+                case "PASS" -> "Brand names match";
+                case "FAIL" -> "Brand names do not match";
+                default -> "Brand could not be verified";
+            }
         ));
 
         BigDecimal expected = parseAbv(expectedAbv);
@@ -73,11 +85,30 @@ public class ValidationService {
     private BigDecimal parseAbv(String text) {
         if (text == null) return null;
 
-        Matcher m = Pattern.compile(
-                "(\\d+(?:\\.\\d+)?)\\s*%\\s*(?:ABV|ALC\\.?/?VOL\\.?)?",
-                Pattern.CASE_INSENSITIVE
-        ).matcher(text);
+        Pattern pattern = Pattern.compile(
+            "(\\d{1,3}(?:\\.\\d+)?)\\s*%|" +
+            "(?:ALCOHOL\\s+BY\\s+VOLUME)\\s*[:\\-]?\\s*" +
+            "(\\d{1,3}(?:\\.\\d+)?)\\s*%",
+            Pattern.CASE_INSENSITIVE
+        );
 
-        return m.find() ? new BigDecimal(m.group(1)) : null;
+        Matcher matcher = pattern.matcher(text);
+
+        if (!matcher.find()) {
+            return null;
+        }
+
+        String value = matcher.group(1) != null
+            ? matcher.group(1)
+            : matcher.group(2);
+
+        BigDecimal abv = new BigDecimal(value);
+
+        if (abv.compareTo(BigDecimal.ZERO) < 0 ||
+            abv.compareTo(new BigDecimal("100")) > 0) {
+            return null;
+        }
+
+        return abv;
     }
 }

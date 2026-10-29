@@ -1,8 +1,10 @@
 
 package com.example.labelverifier.controller;
 
+import com.example.labelverifier.dto.DetectedLabelFields;
 import com.example.labelverifier.dto.OcrResult;
 import com.example.labelverifier.dto.ValidationResult;
+import com.example.labelverifier.service.LabelFieldExtractor;
 import com.example.labelverifier.service.ValidationService;
 import com.example.labelverifier.service.OcrService;
 import tools.jackson.databind.JsonNode;
@@ -24,14 +26,17 @@ public class VerificationController {
     private final ValidationService validationService;
     private final JsonMapper objectMapper;
     private final OcrService ocrService;
+    private final LabelFieldExtractor labelFieldExtractor;
 
     public VerificationController(
             ValidationService validationService,
             JsonMapper objectMapper,
-            OcrService ocrService) {
+            OcrService ocrService,
+            LabelFieldExtractor labelFieldExtractor) {
         this.validationService = validationService;
         this.objectMapper = objectMapper;
         this.ocrService = ocrService;
+        this.labelFieldExtractor = labelFieldExtractor;
     }
 
     @PostMapping(value = "/ocr", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -59,30 +64,47 @@ public class VerificationController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> verify(
-            @RequestPart("image") MultipartFile image,
-            @RequestPart("application") String application)
-            throws IOException {
+        @RequestPart("image") MultipartFile image,
+        @RequestPart("application") String application)
+        throws IOException {
 
         if (image.isEmpty()) {
             return ResponseEntity.badRequest()
-                    .body("Image is required");
+                .body("Image is required");
+        }
+
+        BufferedImage bufferedImage =
+            ImageIO.read(image.getInputStream());
+
+        if (bufferedImage == null) {
+            return ResponseEntity.badRequest()
+                .body("Unsupported image format");
         }
 
         JsonNode data = objectMapper.readTree(application);
 
-        String brand = data.path("brandName").asText("");
-        String abv = data.path("alcoholContent").asText("");
+        String expectedBrand =
+            data.path("brandName").asText("");
 
-        // Temporary simulated OCR values
-        String detectedBrand = "OLD TOM DISTILLERY";
-        String detectedAbv = "45% Alc./Vol.";
+        String expectedAbv =
+            data.path("alcoholContent").asText("");
 
-        ValidationResult result = validationService.validate(
-                brand,
-                detectedBrand,
-                abv,
-                detectedAbv
-        );
+        OcrResult ocrResult =
+            ocrService.extract(bufferedImage);
+
+        DetectedLabelFields fields =
+            labelFieldExtractor.extract(
+                    ocrResult.fullText(),
+                    expectedBrand
+            );
+
+        ValidationResult result =
+            validationService.validate(
+                    expectedBrand,
+                    fields.brandName(),
+                    expectedAbv,
+                    fields.alcoholContent()
+            );
 
         return ResponseEntity.ok(result);
     }

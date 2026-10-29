@@ -32,4 +32,17 @@ class ValidationServiceTest {
 
         assertEquals("FAIL", result.status());
     }
+
+    @Test
+    void shouldFailWhenAlcoholByVolumeDiffers() {
+
+        var result = service.validate(
+            "Old Tom Distillery",
+            null,
+            "45% ABV",
+            "Alcohol by volume 17%"
+        );
+
+        assertEquals("FAIL", result.status());
+    }
 }
