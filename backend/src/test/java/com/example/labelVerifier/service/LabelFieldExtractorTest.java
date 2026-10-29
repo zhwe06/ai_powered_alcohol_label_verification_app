@@ -17,7 +17,7 @@ class LabelFieldExtractorTest {
                 OLD TOM DISTILLERY
                 KENTUCKY BOURBON
                 45% ALC./VOL.
-                NET CONTENTS 750 mL
+                750 mL
                 GOVERNMENT WARNING:
                 (1) According to the Surgeon General,
                 women should not drink alcoholic beverages
@@ -39,7 +39,6 @@ class LabelFieldExtractorTest {
             "45% ALC./VOL.",
             fields.alcoholContent()
         );
-        System.out.println(fields.netContents());
         assertEquals(
             "750 mL",
             fields.netContents()

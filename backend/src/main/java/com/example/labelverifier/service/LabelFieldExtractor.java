@@ -41,11 +41,17 @@ public class LabelFieldExtractor {
             );
 
     private static final Pattern NET_CONTENTS_PATTERN =
-        Pattern.compile(
-             "\\bNET\\s+CONTENTS?\\s*[:\\-]?\\s*" +
-            "(\\d+(?:\\.\\d+)?\\s*(?:mL|L))\\b",
-            Pattern.CASE_INSENSITIVE
-        );
+            Pattern.compile(
+                 "\\bNET\\s+CONTENTS?\\s*[:\\-]?\\s*" +
+                "(\\d+(?:\\.\\d+)?\\s*(?:mL|L))\\b",
+                Pattern.CASE_INSENSITIVE
+            );
+
+    private static final Pattern STANDALONE_VOLUME_PATTERN =
+            Pattern.compile(
+                "^\\s*(\\d+(?:\\.\\d+)?\\s*(?:mL|L))\\s*$",
+                Pattern.CASE_INSENSITIVE
+            );
 
     public DetectedLabelFields extract(
             String fullText,
@@ -135,6 +141,15 @@ public class LabelFieldExtractor {
 
         if (matcher.find()) {
             return matcher.group(1).trim();
+        }
+
+        for (String line : text.split("\\R")) {
+            Matcher standalone =
+                STANDALONE_VOLUME_PATTERN.matcher(line);
+
+            if (standalone.matches()) {
+                return standalone.group(1).trim();
+            }
         }
 
         return null;
