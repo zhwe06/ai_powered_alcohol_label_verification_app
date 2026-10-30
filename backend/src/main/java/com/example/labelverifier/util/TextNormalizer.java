@@ -1,5 +1,7 @@
 package com.example.labelverifier.util;
 
+import org.apache.commons.text.similarity.LevenshteinDistance;
+
 import java.text.Normalizer;
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -8,6 +10,9 @@ public final class TextNormalizer {
 
     private TextNormalizer() {
     }
+
+    private static final LevenshteinDistance LEVENSHTEIN =
+            LevenshteinDistance.getDefaultInstance();
 
     /**
      * Normalizes text so that differences agents would ignore
@@ -42,5 +47,22 @@ public final class TextNormalizer {
                 "(?<![a-z0-9])" + Pattern.quote(normalizedPhrase) + "(?![a-z0-9])");
 
         return pattern.matcher(normalizedText).find();
+    }
+
+    /**
+     * Returns a similarity score between 0.0 (completely different)
+     * and 1.0 (identical after normalization).
+     */
+    public static double similarity(String a, String b) {
+        String left = forComparison(a);
+        String right = forComparison(b);
+        int maxLength = Math.max(left.length(), right.length());
+
+        if (maxLength == 0) {
+            return 1.0;
+        }
+
+        int distance = LEVENSHTEIN.apply(left, right);
+        return 1.0 - (double) distance / maxLength;
     }
 }

@@ -90,6 +90,10 @@ public class LabelFieldExtractor {
         for (String line : fullText.split("\\R")) {
             if (TextNormalizer.containsPhrase(line, expectedBrand)) {
                 return line.trim();
+            } else {
+                if(TextNormalizer.similarity(line,expectedBrand) >= 0.8) {
+                    return line.trim();
+                }
             }
         }
 

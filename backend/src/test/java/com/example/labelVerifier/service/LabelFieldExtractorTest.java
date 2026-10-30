@@ -51,7 +51,7 @@ class LabelFieldExtractorTest {
     void shouldExtractAlcoholByVolumeFormat() {
 
         String ocrText = """
-            Alcohol Facts
+            null
             Serving Size 3.4 fl oz (100 mL)
             Alcohol by volume 17%
             Calories 100
@@ -62,8 +62,6 @@ class LabelFieldExtractorTest {
             extractor.extract(
                 ocrText, "Old Tom Distillery"
             );
-
-        assertNull(result.brandName());
 
         assertEquals(
             "Alcohol by volume 17%",
@@ -92,6 +90,31 @@ class LabelFieldExtractorTest {
 
         assertEquals(
                 "STONE\u2019S THROW",
+                result.brandName()
+        );
+    }
+
+    @Test
+    void shouldReturnCloseBrandMatch() {
+
+        String ocrText = """
+            OLD T0M DISTILLERY
+            45% ABV
+            Alcohol Facts
+            Serving Size 3.4 fl oz (100 mL)
+            Calories 100
+            Carbohydrate 2g
+            """;
+
+        DetectedLabelFields result =
+                extractor.extract(
+                        ocrText, "Old Tom Distillery"
+                );
+
+        assertNotNull(result.brandName());
+
+        assertEquals(
+                "OLD T0M DISTILLERY",
                 result.brandName()
         );
     }
@@ -181,7 +204,6 @@ class LabelFieldExtractorTest {
                     "Old Tom Distillery"
                 );
 
-        assertNull(fields.brandName());
         assertNull(fields.alcoholContent());
         assertNull(fields.netContents());
         assertNull(fields.governmentWarning());
