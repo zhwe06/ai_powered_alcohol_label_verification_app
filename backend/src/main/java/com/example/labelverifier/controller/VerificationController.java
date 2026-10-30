@@ -1,14 +1,13 @@
-
 package com.example.labelverifier.controller;
 
 import com.example.labelverifier.dto.DetectedLabelFields;
 import com.example.labelverifier.dto.OcrResult;
 import com.example.labelverifier.dto.ValidationResult;
+import com.example.labelverifier.exception.InvalidImageException;
 import com.example.labelverifier.service.GovernmentWarningValidator;
 import com.example.labelverifier.dto.FieldCheck;
 import com.example.labelverifier.service.NetContentsValidator;
 import com.example.labelverifier.service.LabelFieldExtractor;
-import com.example.labelverifier.service.NetContentsValidator;
 import com.example.labelverifier.service.ValidationService;
 import com.example.labelverifier.service.OcrService;
 import tools.jackson.databind.JsonNode;
@@ -52,21 +51,19 @@ public class VerificationController {
     }
 
     @PostMapping(value = "/ocr", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> testOcr(
+    public ResponseEntity<OcrResult> testOcr(
         @RequestPart("image") MultipartFile image)
         throws IOException {
 
         if (image.isEmpty()) {
-            return ResponseEntity.badRequest()
-                .body("Image is required");
+            throw new InvalidImageException("Image is required");
         }
 
         BufferedImage bufferedImage =
             ImageIO.read(image.getInputStream());
 
         if (bufferedImage == null) {
-            return ResponseEntity.badRequest()
-                .body("Unsupported image format");
+            throw new InvalidImageException("Unsupported image format");
         }
 
         OcrResult result = ocrService.extract(bufferedImage);
@@ -75,22 +72,20 @@ public class VerificationController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> verify(
+    public ResponseEntity<ValidationResult> verify(
         @RequestPart("image") MultipartFile image,
         @RequestPart("application") String application)
         throws IOException {
 
         if (image.isEmpty()) {
-            return ResponseEntity.badRequest()
-                .body("Image is required");
+            throw new InvalidImageException("Image is required");
         }
 
         BufferedImage bufferedImage =
             ImageIO.read(image.getInputStream());
 
         if (bufferedImage == null) {
-            return ResponseEntity.badRequest()
-                .body("Unsupported image format");
+            throw new InvalidImageException("Unsupported image format");
         }
 
         JsonNode data = objectMapper.readTree(application);
