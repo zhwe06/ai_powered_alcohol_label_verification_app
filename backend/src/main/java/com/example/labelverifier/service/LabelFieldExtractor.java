@@ -1,9 +1,9 @@
 package com.example.labelverifier.service;
 
 import com.example.labelverifier.dto.DetectedLabelFields;
+import com.example.labelverifier.util.TextNormalizer;
 import org.springframework.stereotype.Service;
 
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -87,13 +87,8 @@ public class LabelFieldExtractor {
             return null;
         }
 
-        String normalizedExpected =
-                normalize(expectedBrand);
-
         for (String line : fullText.split("\\R")) {
-            String normalizedLine = normalize(line);
-
-            if (normalizedLine.equals(normalizedExpected)) {
+            if (TextNormalizer.containsPhrase(line, expectedBrand)) {
                 return line.trim();
             }
         }
@@ -153,12 +148,5 @@ public class LabelFieldExtractor {
         }
 
         return null;
-    }
-
-    private String normalize(String text) {
-
-        return text.trim()
-                .replaceAll("\\s+", " ")
-                .toLowerCase(Locale.ROOT);
     }
 }

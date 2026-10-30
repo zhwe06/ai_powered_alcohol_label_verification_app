@@ -22,6 +22,30 @@ class ValidationServiceTest {
     }
 
     @Test
+    void shouldRequireReviewWhenBrandNotFound() {
+        var result = service.validate(
+                "Old Tom Distillery",
+                null,
+                "45% ABV",
+                "45% Alc./Vol."
+        );
+
+        assertEquals("NEEDS_REVIEW", result.status());
+    }
+
+    @Test
+    void shouldRequireReviewForCloseBrandMatch() {
+        var result = service.validate(
+                "Old Tom Distilllery",
+                "OLD TOM DISTILLERY",
+                "45% ABV",
+                "45% Alc./Vol."
+        );
+
+        assertEquals("NEEDS_REVIEW", result.status());
+    }
+
+    @Test
     void shouldFailWhenAbvDiffers() {
         var result = service.validate(
                 "Old Tom Distillery",

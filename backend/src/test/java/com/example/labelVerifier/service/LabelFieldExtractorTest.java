@@ -72,6 +72,76 @@ class LabelFieldExtractorTest {
     }
 
     @Test
+    void shouldMatchBrandWithCurlyApostrophe() {
+
+        String ocrText = """
+            STONE\u2019S THROW
+            Alcohol Facts
+            Serving Size 3.4 fl oz (100 mL)
+            Alcohol by volume 17%
+            Calories 100
+            Carbohydrate 2g
+            """;
+
+        DetectedLabelFields result =
+                extractor.extract(
+                        ocrText, "Stone's Throw"
+                );
+
+        assertNotNull(result.brandName());
+
+        assertEquals(
+                "STONE\u2019S THROW",
+                result.brandName()
+        );
+    }
+
+    @Test
+    void shouldFindBrandInsideLongerLine() {
+
+        String ocrText = """
+            OLD TOM DISTILLERY EST. 1891
+            Alcohol Facts
+            Serving Size 3.4 fl oz (100 mL)
+            Alcohol by volume 17%
+            Calories 100
+            Carbohydrate 2g
+            """;
+
+        DetectedLabelFields result =
+                extractor.extract(
+                        ocrText, "Old Tom Distillery"
+                );
+
+        assertNotNull(result.brandName());
+
+        assertEquals(
+                "OLD TOM DISTILLERY EST. 1891",
+                result.brandName()
+        );
+    }
+
+    @Test
+    void shouldNotMatchBrandInsideAnotherWord() {
+
+        String ocrText = """
+            SPACE WHISKEY
+            Alcohol Facts
+            Serving Size 3.4 fl oz (100 mL)
+            Alcohol by volume 17%
+            Calories 100
+            Carbohydrate 2g
+            """;
+
+        DetectedLabelFields result =
+                extractor.extract(
+                        ocrText, "Ace"
+                );
+
+        assertNull(result.brandName());
+    }
+
+    @Test
     void shouldNotConfuseServingSizeWithNetContents() {
 
         String ocrText = """

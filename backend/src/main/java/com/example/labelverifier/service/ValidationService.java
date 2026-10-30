@@ -2,6 +2,7 @@ package com.example.labelverifier.service;
 
 import com.example.labelverifier.dto.FieldCheck;
 import com.example.labelverifier.dto.ValidationResult;
+import com.example.labelverifier.util.TextNormalizer;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -22,15 +23,18 @@ public class ValidationService {
         List<FieldCheck> checks = new ArrayList<>();
 
         String brandStatus;
+        String brandReason;
 
         if (expectedBrand == null || expectedBrand.isBlank()
             || detectedBrand == null || detectedBrand.isBlank()) {
             brandStatus = "NEEDS_REVIEW";
-        } else if (normalize(expectedBrand)
-            .equals(normalize(detectedBrand))) {
+            brandReason = "Brand name not found in label text";
+        } else if (TextNormalizer.containsPhrase(detectedBrand, expectedBrand)) {
             brandStatus = "PASS";
+            brandReason = "Brand name found on label";
         } else {
-            brandStatus = "FAIL";
+            brandStatus = "NEEDS_REVIEW";
+            brandReason = "Close match found — please confirm";
         }
 
         checks.add(new FieldCheck(
@@ -38,11 +42,7 @@ public class ValidationService {
             expectedBrand,
             detectedBrand,
             brandStatus,
-            switch (brandStatus) {
-                case "PASS" -> "Brand names match";
-                case "FAIL" -> "Brand names do not match";
-                default -> "Brand could not be verified";
-            }
+            brandReason
         ));
 
         BigDecimal expected = parseAbv(expectedAbv);
@@ -73,13 +73,6 @@ public class ValidationService {
                     ? "NEEDS_REVIEW" : "PASS";
 
         return new ValidationResult(overall, checks);
-    }
-
-    private String normalize(String value) {
-        if (value == null) return "";
-        return value.trim()
-                .replaceAll("\\s+", " ")
-                .toLowerCase(java.util.Locale.ROOT);
     }
 
     private BigDecimal parseAbv(String text) {
