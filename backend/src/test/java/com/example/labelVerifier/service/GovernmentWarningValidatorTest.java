@@ -29,6 +29,19 @@ class GovernmentWarningValidatorTest {
     }
 
     @Test
+    void shouldFailWhenTitleIsNotAllCaps() throws Exception {
+        String titleCase = officialText()
+                .replace("GOVERNMENT WARNING:", "Government Warning:");
+
+        List<FieldCheck> checks =
+                validator.validate(titleCase);
+        assertEquals(
+                "FAIL",
+                checks.get(0).status()
+        );
+    }
+
+    @Test
     void shouldPassWhenTextMatches() throws Exception {
 
         String ocrText = officialText();

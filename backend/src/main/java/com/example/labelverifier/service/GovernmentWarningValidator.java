@@ -8,12 +8,18 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class GovernmentWarningValidator {
 
     private static final String WARNING_TITLE =
             "GOVERNMENT WARNING:";
+
+    private static final Pattern TITLE_PATTERN =
+            Pattern.compile("GOVERNMENT\\s+WARNING\\s*:", Pattern.CASE_INSENSITIVE);
 
     private final String requiredWarning;
 
@@ -32,6 +38,8 @@ public class GovernmentWarningValidator {
                 );
             }
 
+            // The extractor may include text after the warning.
+            // Check the complete required text at its beginning.
             if (!requiredWarning.startsWith(WARNING_TITLE)
                     || !requiredWarning.contains("(1)")
                     || !requiredWarning.contains("(2)")) {
@@ -62,19 +70,24 @@ public class GovernmentWarningValidator {
         } else {
             String normalized = normalize(detectedWarning);
 
-            // The extractor may include text after the warning.
-            // Check the complete required text at its beginning.
             boolean matches = normalized.equals(requiredWarning)
                 || normalized.startsWith(requiredWarning + " ");
 
-            if (matches) {
-                textStatus = "PASS";
-                textReason =
-                    "Complete required warning text recognized";
+            Matcher title = TITLE_PATTERN.matcher(normalized);
+
+            if (title.lookingAt()
+                    && !title.group().equals(title.group().toUpperCase(Locale.ROOT))) {
+                textStatus = "FAIL";
+                textReason = "\"GOVERNMENT WARNING:\" must be in all capital letters";
+            } else if(matches){
+
+                    textStatus = "PASS";
+                    textReason =
+                            "Complete required warning text recognized";
             } else {
-                textStatus = "NEEDS_REVIEW";
-                textReason =
-                    "OCR text does not exactly match the required warning";
+                    textStatus = "NEEDS_REVIEW";
+                    textReason =
+                        "OCR text does not exactly match the required warning";
             }
         }
 
