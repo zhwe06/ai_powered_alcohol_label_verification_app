@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Frontend build output (copied in during Docker build) ###
+src/main/resources/static/
