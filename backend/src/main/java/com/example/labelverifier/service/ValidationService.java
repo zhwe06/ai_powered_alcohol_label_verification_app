@@ -26,7 +26,7 @@ public class ValidationService {
         String brandReason;
 
         if (expectedBrand == null || expectedBrand.isBlank()
-            || detectedBrand == null || detectedBrand.isBlank()) {
+                || detectedBrand == null || detectedBrand.isBlank()) {
             brandStatus = "NEEDS_REVIEW";
             brandReason = "Brand name not found in label text";
         } else if (TextNormalizer.containsPhrase(detectedBrand, expectedBrand)) {
@@ -38,11 +38,11 @@ public class ValidationService {
         }
 
         checks.add(new FieldCheck(
-            "brandName",
-            expectedBrand,
-            detectedBrand,
-            brandStatus,
-            brandReason
+                "brandName",
+                expectedBrand,
+                detectedBrand,
+                brandStatus,
+                brandReason
         ));
 
         BigDecimal expected = parseAbv(expectedAbv);
@@ -51,7 +51,7 @@ public class ValidationService {
         String abvStatus = expected == null || detected == null
                 ? "NEEDS_REVIEW"
                 : expected.compareTo(detected) == 0
-                    ? "PASS" : "FAIL";
+                ? "PASS" : "FAIL";
 
         checks.add(new FieldCheck(
                 "alcoholContent",
@@ -69,8 +69,8 @@ public class ValidationService {
                 .anyMatch(c -> c.status().equals("FAIL"))
                 ? "FAIL"
                 : checks.stream().anyMatch(
-                    c -> c.status().equals("NEEDS_REVIEW"))
-                    ? "NEEDS_REVIEW" : "PASS";
+                c -> c.status().equals("NEEDS_REVIEW"))
+                ? "NEEDS_REVIEW" : "PASS";
 
         return new ValidationResult(overall, checks);
     }
@@ -79,10 +79,10 @@ public class ValidationService {
         if (text == null) return null;
 
         Pattern pattern = Pattern.compile(
-            "(\\d{1,3}(?:\\.\\d+)?)\\s*%|" +
-            "(?:ALCOHOL\\s+BY\\s+VOLUME)\\s*[:\\-]?\\s*" +
-            "(\\d{1,3}(?:\\.\\d+)?)\\s*%",
-            Pattern.CASE_INSENSITIVE
+                "(\\d{1,3}(?:\\.\\d+)?)\\s*%|" +
+                        "(?:ALCOHOL\\s+BY\\s+VOLUME)\\s*[:\\-]?\\s*" +
+                        "(\\d{1,3}(?:\\.\\d+)?)\\s*%",
+                Pattern.CASE_INSENSITIVE
         );
 
         Matcher matcher = pattern.matcher(text);
@@ -92,13 +92,13 @@ public class ValidationService {
         }
 
         String value = matcher.group(1) != null
-            ? matcher.group(1)
-            : matcher.group(2);
+                ? matcher.group(1)
+                : matcher.group(2);
 
         BigDecimal abv = new BigDecimal(value);
 
         if (abv.compareTo(BigDecimal.ZERO) < 0 ||
-            abv.compareTo(new BigDecimal("100")) > 0) {
+                abv.compareTo(new BigDecimal("100")) > 0) {
             return null;
         }
 

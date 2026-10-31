@@ -26,15 +26,15 @@ public class GovernmentWarningValidator {
     public GovernmentWarningValidator() {
         try {
             var resource = new ClassPathResource(
-                "regulations/government-warning.txt"
+                    "regulations/government-warning.txt"
             );
 
             try (var input = resource.getInputStream()) {
                 requiredWarning = normalize(
-                    new String(
-                        input.readAllBytes(),
-                        StandardCharsets.UTF_8
-                    )
+                        new String(
+                                input.readAllBytes(),
+                                StandardCharsets.UTF_8
+                        )
                 );
             }
 
@@ -44,13 +44,13 @@ public class GovernmentWarningValidator {
                     || !requiredWarning.contains("(1)")
                     || !requiredWarning.contains("(2)")) {
                 throw new IllegalStateException(
-                    "Invalid government warning reference"
+                        "Invalid government warning reference"
                 );
             }
 
         } catch (IOException e) {
             throw new IllegalStateException(
-                "Cannot load government warning reference", e
+                    "Cannot load government warning reference", e
             );
         }
     }
@@ -65,13 +65,13 @@ public class GovernmentWarningValidator {
 
             textStatus = "NEEDS_REVIEW";
             textReason =
-                "Warning not detected in OCR text";
+                    "Warning not detected in OCR text";
 
         } else {
             String normalized = normalize(detectedWarning);
 
             boolean matches = normalized.equals(requiredWarning)
-                || normalized.startsWith(requiredWarning + " ");
+                    || normalized.startsWith(requiredWarning + " ");
 
             Matcher title = TITLE_PATTERN.matcher(normalized);
 
@@ -79,34 +79,34 @@ public class GovernmentWarningValidator {
                     && !title.group().equals(title.group().toUpperCase(Locale.ROOT))) {
                 textStatus = "FAIL";
                 textReason = "\"GOVERNMENT WARNING:\" must be in all capital letters";
-            } else if(matches){
+            } else if (matches) {
 
-                    textStatus = "PASS";
-                    textReason =
-                            "Complete required warning text recognized";
+                textStatus = "PASS";
+                textReason =
+                        "Complete required warning text recognized";
             } else {
-                    textStatus = "NEEDS_REVIEW";
-                    textReason =
+                textStatus = "NEEDS_REVIEW";
+                textReason =
                         "OCR text does not exactly match the required warning";
             }
         }
 
         FieldCheck textCheck = new FieldCheck(
-            "governmentWarningText",
-            requiredWarning,
-            detectedWarning,
-            textStatus,
-            textReason
+                "governmentWarningText",
+                requiredWarning,
+                detectedWarning,
+                textStatus,
+                textReason
         );
 
         FieldCheck formattingCheck = new FieldCheck(
-            "governmentWarningFormatting",
-            "Required capitalization, bold styling, " +
-                "type size, contrast and placement",
-            null,
-            "NEEDS_REVIEW",
-            "Formatting cannot be verified from " +
-                "plain OCR text; manual review required"
+                "governmentWarningFormatting",
+                "Required capitalization, bold styling, " +
+                        "type size, contrast and placement",
+                null,
+                "NEEDS_REVIEW",
+                "Formatting cannot be verified from " +
+                        "plain OCR text; manual review required"
         );
 
         return List.of(textCheck, formattingCheck);
@@ -114,6 +114,6 @@ public class GovernmentWarningValidator {
 
     private String normalize(String text) {
         return text.strip()
-            .replaceAll("\\s+", " ");
+                .replaceAll("\\s+", " ");
     }
 }

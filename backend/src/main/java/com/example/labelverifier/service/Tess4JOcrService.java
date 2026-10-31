@@ -29,18 +29,18 @@ public class Tess4JOcrService implements OcrService {
 
         if (image == null) {
             throw new IllegalArgumentException(
-                "Image cannot be null"
+                    "Image cannot be null"
             );
         }
 
         Path trainedData = Path.of(
-            dataPath, "eng.traineddata"
+                dataPath, "eng.traineddata"
         );
 
         if (!Files.isRegularFile(trainedData)) {
             throw new IllegalStateException(
-                "Missing Tesseract language data: "
-                    + trainedData.toAbsolutePath()
+                    "Missing Tesseract language data: "
+                            + trainedData.toAbsolutePath()
             );
         }
 
@@ -54,13 +54,13 @@ public class Tess4JOcrService implements OcrService {
             String text = tesseract.doOCR(image);
 
             return new OcrResult(
-                text == null ? "" : text.strip(),
-                "tesseract"
+                    text == null ? "" : text.strip(),
+                    "tesseract"
             );
 
         } catch (TesseractException e) {
             throw new IllegalStateException(
-                "Tesseract OCR processing failed", e
+                    "Tesseract OCR processing failed", e
             );
         }
     }

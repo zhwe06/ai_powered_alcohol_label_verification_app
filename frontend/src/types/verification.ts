@@ -18,6 +18,7 @@ export interface VerificationResult {
 
 export interface ApplicationData {
   brandName: string
+  classType: string
   alcoholContent: string
   netContents: string
 }

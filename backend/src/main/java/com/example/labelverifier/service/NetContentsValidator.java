@@ -19,13 +19,13 @@ public class NetContentsValidator {
         String status;
         String reason;
 
-        if(expectedMl == null) {
+        if (expectedMl == null) {
             status = "NEEDS_REVIEW";
             reason = "Expected net contents are missing or invalid";
-        } else if(detectedMl == null) {
+        } else if (detectedMl == null) {
             status = "NEEDS_REVIEW";
             reason = "Net contents could not be verified form OCR";
-        } else if(expectedMl.compareTo(detectedMl) == 0) {
+        } else if (expectedMl.compareTo(detectedMl) == 0) {
             status = "PASS";
             reason = "Net contents match after unit conversion";
         } else {
@@ -37,19 +37,19 @@ public class NetContentsValidator {
     }
 
     private BigDecimal parseMilliliters(String text) {
-        if(text == null || text.isBlank()) {
+        if (text == null || text.isBlank()) {
             return null;
         }
 
         Matcher matcher = VOLUME_PATTERN.matcher(text);
 
-        if(!matcher.find()) {
+        if (!matcher.find()) {
             return null;
         }
 
         BigDecimal value = new BigDecimal(matcher.group(1));
 
-        if(value.signum() <= 0) {
+        if (value.signum() <= 0) {
             return null;
         }
 

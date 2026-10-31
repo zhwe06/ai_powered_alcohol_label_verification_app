@@ -43,7 +43,7 @@ class NetContentsValidatorTest {
         );
 
         assertEquals(
-            "NEEDS_REVIEW", result.status()
+                "NEEDS_REVIEW", result.status()
         );
     }
 }

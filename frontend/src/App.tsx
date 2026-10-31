@@ -11,6 +11,7 @@ import './App.css'
 
 const fieldLabels: Record<string, string> = {
   brandName: 'Brand Name',
+  classType: "Class / Type",
   alcoholContent: 'Alcohol Content',
   netContents: 'Net Contents',
   governmentWarningText: 'Government Warning Text',
@@ -57,6 +58,7 @@ function App() {
   const [application, setApplication] =
     useState<ApplicationData>({
       brandName: '',
+      classType: '',
       alcoholContent: '',
       netContents: '',
     })
@@ -161,6 +163,15 @@ function App() {
               placeholder="e.g. Old Tom Distillery"
               value={application.brandName}
               onChange={e => updateField('brandName', e.target.value)}
+            />
+
+            <label htmlFor="classType">Class / Type</label>
+            <input
+                id="classType"
+                required
+                placeholder="e.g. Bourbon Whiskey"
+                value={application.classType}
+                onChange={e => updateField('classType', e.target.value)}
             />
 
             <label htmlFor="alcoholContent">

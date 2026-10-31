@@ -17,13 +17,13 @@ class GovernmentWarningValidatorTest {
 
     private String officialText() throws Exception {
         var resource = new ClassPathResource(
-            "regulations/government-warning.txt"
+                "regulations/government-warning.txt"
         );
 
         try (var input = resource.getInputStream()) {
             return new String(
-                input.readAllBytes(),
-                StandardCharsets.UTF_8
+                    input.readAllBytes(),
+                    StandardCharsets.UTF_8
             );
         }
     }
@@ -50,13 +50,13 @@ class GovernmentWarningValidatorTest {
                 validator.validate(ocrText);
 
         assertEquals(
-            "PASS",
-            checks.get(0).status()
+                "PASS",
+                checks.get(0).status()
         );
 
         assertEquals(
-            "NEEDS_REVIEW",
-            checks.get(1).status()
+                "NEEDS_REVIEW",
+                checks.get(1).status()
         );
     }
 
@@ -67,8 +67,8 @@ class GovernmentWarningValidatorTest {
                 validator.validate(null);
 
         assertEquals(
-            "NEEDS_REVIEW",
-            checks.get(0).status()
+                "NEEDS_REVIEW",
+                checks.get(0).status()
         );
     }
 
@@ -83,8 +83,8 @@ class GovernmentWarningValidatorTest {
                 validator.validate(incomplete);
 
         assertEquals(
-            "NEEDS_REVIEW",
-            checks.get(0).status()
+                "NEEDS_REVIEW",
+                checks.get(0).status()
         );
     }
 }

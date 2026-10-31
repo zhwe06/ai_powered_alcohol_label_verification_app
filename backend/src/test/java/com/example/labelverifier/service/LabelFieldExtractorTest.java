@@ -27,21 +27,21 @@ class LabelFieldExtractorTest {
 
         DetectedLabelFields fields =
                 extractor.extract(
-                    ocrText, "Old Tom Distillery"
+                        ocrText, "Old Tom Distillery", null
                 );
 
         assertEquals(
-            "OLD TOM DISTILLERY",
-            fields.brandName()
+                "OLD TOM DISTILLERY",
+                fields.brandName()
         );
 
         assertEquals(
-            "45% ALC./VOL.",
-            fields.alcoholContent()
+                "45% ALC./VOL.",
+                fields.alcoholContent()
         );
         assertEquals(
-            "750 mL",
-            fields.netContents()
+                "750 mL",
+                fields.netContents()
         );
 
         assertNotNull(fields.governmentWarning());
@@ -50,13 +50,13 @@ class LabelFieldExtractorTest {
     @Test
     void shouldPreferExactBrandOverEarlierCloseMatch() {
         String ocrText = """
-        OLD T0M DISTILLERY
-        OLD TOM DISTILLERY
-        45% ABV
-        """;
+                OLD T0M DISTILLERY
+                OLD TOM DISTILLERY
+                45% ABV
+                """;
 
         DetectedLabelFields result =
-                extractor.extract(ocrText, "Old Tom Distillery");
+                extractor.extract(ocrText, "Old Tom Distillery", null);
 
         assertEquals(
                 "OLD TOM DISTILLERY",
@@ -68,21 +68,21 @@ class LabelFieldExtractorTest {
     void shouldExtractAlcoholByVolumeFormat() {
 
         String ocrText = """
-            null
-            Serving Size 3.4 fl oz (100 mL)
-            Alcohol by volume 17%
-            Calories 100
-            Carbohydrate 2g
-            """;
+                null
+                Serving Size 3.4 fl oz (100 mL)
+                Alcohol by volume 17%
+                Calories 100
+                Carbohydrate 2g
+                """;
 
         DetectedLabelFields result =
-            extractor.extract(
-                ocrText, "Old Tom Distillery"
-            );
+                extractor.extract(
+                        ocrText, "Old Tom Distillery", null
+                );
 
         assertEquals(
-            "Alcohol by volume 17%",
-            result.alcoholContent()
+                "Alcohol by volume 17%",
+                result.alcoholContent()
         );
     }
 
@@ -90,17 +90,17 @@ class LabelFieldExtractorTest {
     void shouldMatchBrandWithCurlyApostrophe() {
 
         String ocrText = """
-            STONE\u2019S THROW
-            Alcohol Facts
-            Serving Size 3.4 fl oz (100 mL)
-            Alcohol by volume 17%
-            Calories 100
-            Carbohydrate 2g
-            """;
+                STONE\u2019S THROW
+                Alcohol Facts
+                Serving Size 3.4 fl oz (100 mL)
+                Alcohol by volume 17%
+                Calories 100
+                Carbohydrate 2g
+                """;
 
         DetectedLabelFields result =
                 extractor.extract(
-                        ocrText, "Stone's Throw"
+                        ocrText, "Stone's Throw", null
                 );
 
         assertNotNull(result.brandName());
@@ -115,17 +115,17 @@ class LabelFieldExtractorTest {
     void shouldReturnCloseBrandMatch() {
 
         String ocrText = """
-            OLD T0M DISTILLERY
-            45% ABV
-            Alcohol Facts
-            Serving Size 3.4 fl oz (100 mL)
-            Calories 100
-            Carbohydrate 2g
-            """;
+                OLD T0M DISTILLERY
+                45% ABV
+                Alcohol Facts
+                Serving Size 3.4 fl oz (100 mL)
+                Calories 100
+                Carbohydrate 2g
+                """;
 
         DetectedLabelFields result =
                 extractor.extract(
-                        ocrText, "Old Tom Distillery"
+                        ocrText, "Old Tom Distillery", null
                 );
 
         assertNotNull(result.brandName());
@@ -140,17 +140,17 @@ class LabelFieldExtractorTest {
     void shouldFindBrandInsideLongerLine() {
 
         String ocrText = """
-            OLD TOM DISTILLERY EST. 1891
-            Alcohol Facts
-            Serving Size 3.4 fl oz (100 mL)
-            Alcohol by volume 17%
-            Calories 100
-            Carbohydrate 2g
-            """;
+                OLD TOM DISTILLERY EST. 1891
+                Alcohol Facts
+                Serving Size 3.4 fl oz (100 mL)
+                Alcohol by volume 17%
+                Calories 100
+                Carbohydrate 2g
+                """;
 
         DetectedLabelFields result =
                 extractor.extract(
-                        ocrText, "Old Tom Distillery"
+                        ocrText, "Old Tom Distillery", null
                 );
 
         assertNotNull(result.brandName());
@@ -165,17 +165,17 @@ class LabelFieldExtractorTest {
     void shouldNotMatchBrandInsideAnotherWord() {
 
         String ocrText = """
-            SPACE WHISKEY
-            Alcohol Facts
-            Serving Size 3.4 fl oz (100 mL)
-            Alcohol by volume 17%
-            Calories 100
-            Carbohydrate 2g
-            """;
+                SPACE WHISKEY
+                Alcohol Facts
+                Serving Size 3.4 fl oz (100 mL)
+                Alcohol by volume 17%
+                Calories 100
+                Carbohydrate 2g
+                """;
 
         DetectedLabelFields result =
                 extractor.extract(
-                        ocrText, "Ace"
+                        ocrText, "Ace", null
                 );
 
         assertNull(result.brandName());
@@ -185,14 +185,14 @@ class LabelFieldExtractorTest {
     void shouldNotConfuseServingSizeWithNetContents() {
 
         String ocrText = """
-            Alcohol Facts
-            Serving Size 3.4 fl.oz (100 mL)
-            Alcohol by volume 17%
-            Calories 100
-            """;
+                Alcohol Facts
+                Serving Size 3.4 fl.oz (100 mL)
+                Alcohol by volume 17%
+                Calories 100
+                """;
 
         DetectedLabelFields result =
-            extractor.extract(ocrText, "Test Brand");
+                extractor.extract(ocrText, "Test Brand", null);
 
         assertNull(result.netContents());
     }
@@ -201,13 +201,13 @@ class LabelFieldExtractorTest {
     void shouldExtractExplicitNetContents() {
 
         String ocrText = """
-            TEST BRAND
-            45% ABV
-            NET CONTENTS 750 mL
-            """;
+                TEST BRAND
+                45% ABV
+                NET CONTENTS 750 mL
+                """;
 
         DetectedLabelFields result =
-            extractor.extract(ocrText, "Test Brand");
+                extractor.extract(ocrText, "Test Brand", null);
 
         assertEquals("750 mL", result.netContents());
     }
@@ -217,8 +217,8 @@ class LabelFieldExtractorTest {
 
         DetectedLabelFields fields =
                 extractor.extract(
-                    "KENTUCKY BOURBON",
-                    "Old Tom Distillery"
+                        "KENTUCKY BOURBON",
+                        "Old Tom Distillery", null
                 );
 
         assertNull(fields.alcoholContent());
@@ -231,8 +231,8 @@ class LabelFieldExtractorTest {
 
         DetectedLabelFields fields =
                 extractor.extract(
-                    "",
-                    "Old Tom Distillery"
+                        "",
+                        "Old Tom Distillery", null
                 );
 
         assertNull(fields.brandName());
@@ -244,15 +244,43 @@ class LabelFieldExtractorTest {
 
         DetectedLabelFields fields =
                 extractor.extract(
-                    "ANOTHER DISTILLERY\n40% ABV",
-                    "Old Tom Distillery"
+                        "ANOTHER DISTILLERY\n40% ABV",
+                        "Old Tom Distillery", null
                 );
 
         assertNull(fields.brandName());
 
         assertEquals(
-            "40% ABV",
-            fields.alcoholContent()
+                "40% ABV",
+                fields.alcoholContent()
         );
+    }
+
+    @Test
+    void shouldExtractClassType() {
+        String ocrText = """
+            OLD TOM DISTILLERY
+            Kentucky Straight Bourbon Whiskey
+            45% ABV
+            """;
+
+        DetectedLabelFields result = extractor.extract(
+                ocrText, "Old Tom Distillery", "Kentucky Straight Bourbon Whiskey");
+
+        assertEquals("Kentucky Straight Bourbon Whiskey", result.classType());
+    }
+
+    @Test
+    void shouldReturnNullClassTypeWhenNotProvided() {
+        String ocrText = """
+            OLD TOM DISTILLERY
+            Kentucky Straight Bourbon Whiskey
+            45% ABV
+            """;
+
+        DetectedLabelFields result = extractor.extract(
+                ocrText, "Old Tom Distillery", null);
+
+        assertNull(result.classType());
     }
 }
