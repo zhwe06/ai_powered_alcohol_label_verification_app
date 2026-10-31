@@ -1,6 +1,6 @@
 # Alcohol Label Verification
 
-A decision-support tool that helps TTB reviewers compare label images against
+A decision-support tool that helps TTB (Alcohol and Tobacco Tax and Trade Bureau) reviewers compare label images against
 the application data they were submitted with. It flags mismatches and
 uncertain cases for human review — it does **not** make the final approval
 decision.
@@ -112,10 +112,8 @@ set inside the Docker image).
 
 ## Approach and Key Decisions
 
-<!-- 最重要的一節。每一點都用「選了什麼 → 為什麼 → 代價」的結構 -->
-
 1. **Local OCR (Tesseract) instead of a cloud AI model.**
-   The interview noted a firewall that blocks outbound ML APIs. Local OCR keeps
+   Stakeholder interviews noted a firewall that blocks outbound ML APIs. Local OCR keeps
    data inside the system boundary and produces reproducible, explainable
    output. *Cost:* Tesseract reads blurry photos less reliably than cloud vision
    models. *Flexibility:* OCR is hidden behind the `OcrService` interface — if
@@ -160,11 +158,11 @@ set inside the Docker image).
 The 5-second target is met on Azure. OCR speed is CPU-bound, so moving from
 Render's 0.1 vCPU to a 1 vCPU container solved it — no need to change the OCR
 engine. (Numbers come from the synthetic labels in `samples/`; real photos are
-a little slower.)
+may be slower.)
 
 ## Known Limitations
 
-- Tilted, blurry photos degrade most fields to NEEDS_REVIEW (see `samples/05`).
+- Tilted, blurry photos degrade most fields to NEEDS_REVIEW (see `samples/05-imperfect-photo.jpg`).
   The system degrades safely to manual review instead of guessing wrong.
 - Bold styling and type size cannot be verified from OCR text.
 - Bottler and Country of Origin are not implemented.
