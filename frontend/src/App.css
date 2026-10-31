@@ -277,3 +277,38 @@ footer {
     padding: 20px;
   }
 }
+
+.mode-switch {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.mode-switch button {
+  padding: 12px 20px;
+  font-size: 1rem;
+  border: 2px solid #1f3a5f;
+  background: white;
+  color: #1f3a5f;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.mode-switch button.active {
+  background: #1f3a5f;
+  color: white;
+}
+
+.batch-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+
+.batch-table th,
+.batch-table td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+  vertical-align: top;
+}

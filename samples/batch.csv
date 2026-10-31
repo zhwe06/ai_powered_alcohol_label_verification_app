@@ -1,0 +1,8 @@
+filename,brandName,classType,alcoholContent,netContents
+01-old-tom-bourbon.png,Old Tom Distillery,Kentucky Straight Bourbon Whiskey,45% ABV,750 mL
+02-stones-throw-vodka.png,Stone's Throw,Vodka,40% ABV,1000 mL
+03-abv-mismatch.png,River Bend,Straight Rye Whiskey,45% ABV,750 mL
+04-warning-title-case.png,Harbor Light,London Dry Gin,47% ABV,750 mL
+05-imperfect-photo.jpg,Old Tom Distillery,Kentucky Straight Bourbon Whiskey,45% ABV,750 mL
+06-chateau-red-wine.png,Chateau Bellevue,Red Wine,13.5% ABV,750 mL
+07-missing-image.png,Missing Label Co,Vodka,40% ABV,750 mL
