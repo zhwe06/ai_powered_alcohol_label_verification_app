@@ -120,8 +120,7 @@ function App() {
             Batch Upload
           </button>
         </section>
-        {mode === 'single' ? (
-            <>
+        <div hidden={mode !== 'single'}>
               <form onSubmit={handleSubmit} className="form-grid">
                 <section className="panel">
                   <h2>Application Information</h2>
@@ -246,12 +245,11 @@ function App() {
                     </div>
                   </section>
               )}
-            </>
-        ) : (
-            <BatchVerification />
-        )}
+        </div>
+        <div hidden={mode !== 'batch'}>
+          <BatchVerification />
+        </div>
       </main>
-
       <footer>
         Treasury AI Engineering Take-Home Prototype
         <span> · </span>
