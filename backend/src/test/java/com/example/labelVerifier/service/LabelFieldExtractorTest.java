@@ -48,6 +48,23 @@ class LabelFieldExtractorTest {
     }
 
     @Test
+    void shouldPreferExactBrandOverEarlierCloseMatch() {
+        String ocrText = """
+        OLD T0M DISTILLERY
+        OLD TOM DISTILLERY
+        45% ABV
+        """;
+
+        DetectedLabelFields result =
+                extractor.extract(ocrText, "Old Tom Distillery");
+
+        assertEquals(
+                "OLD TOM DISTILLERY",
+                result.brandName()
+        );
+    }
+
+    @Test
     void shouldExtractAlcoholByVolumeFormat() {
 
         String ocrText = """

@@ -10,6 +10,8 @@ import java.util.regex.Pattern;
 @Service
 public class LabelFieldExtractor {
 
+    private static final double BRAND_SIMILARITY_THRESHOLD = 0.8;
+
     private static final Pattern ABV_PATTERN =
             Pattern.compile(
                 "\\b(\\d{1,2}(?:\\.\\d+)?)\\s*%\\s*" +
@@ -86,15 +88,21 @@ public class LabelFieldExtractor {
                 expectedBrand.isBlank()) {
             return null;
         }
-
+        String bestLine = null;
+        double bestScore = 0.0;
         for (String line : fullText.split("\\R")) {
             if (TextNormalizer.containsPhrase(line, expectedBrand)) {
                 return line.trim();
             } else {
-                if(TextNormalizer.similarity(line,expectedBrand) >= 0.8) {
-                    return line.trim();
+                double score = TextNormalizer.similarity(line,expectedBrand);
+                if(score > bestScore) {
+                    bestScore = score;
+                    bestLine = line;
                 }
             }
+        }
+        if(bestScore >= BRAND_SIMILARITY_THRESHOLD) {
+            return bestLine.trim();
         }
 
         return null;
